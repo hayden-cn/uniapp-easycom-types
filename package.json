@@ -8,7 +8,7 @@
     "easycom"
   ],
   "author": "Hayden <hayden.mike.zhang@gmail.com>",
-  "packageManager": "pnpm@10.8.0",
+  "packageManager": "pnpm@11.5.2",
   "repository": "hayden-cn/uniapp-easycom-types",
   "license": "MIT",
   "exports": {
