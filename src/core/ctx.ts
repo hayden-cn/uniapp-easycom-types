@@ -1,7 +1,12 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { globSync } from 'fast-glob'
-import { genRelativePath, pascalCase, requireJSON } from './utils'
+import {
+  genRelativePath,
+  pascalCase,
+  requireJSON,
+  resolveNodeModulePath,
+} from './utils'
 
 export interface CustomConfig {
   dts?: string
@@ -35,7 +40,8 @@ export const resolveEasycomRules = (root: string) => {
       } else if (pattern.startsWith('../')) {
         easycom.push({ name: key, pattern: pattern.replace('../', '') })
       } else {
-        easycom.push({ name: key, pattern: `node_modules/${pattern}` })
+        const resolved = resolveNodeModulePath(root, pattern)
+        easycom.push({ name: key, pattern: `node_modules/${resolved}` })
       }
     }
   }

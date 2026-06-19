@@ -29,7 +29,8 @@ test('dts', async () => {
         UniList: (typeof import('./uni_modules/uni-list/components/uni-list/uni-list.vue'))['default']
         ComA: (typeof import('./components/com-a/com-a.vue'))['default']
       }
-    }"
+    }
+    "
   `)
 
   await rm(dts)
@@ -85,11 +86,64 @@ test('custom easycom', async () => {
         UniComA: (typeof import('./components/uni-com-a.vue'))['default']
         VueFileList: (typeof import('../node_modules/packageName/path/to/vue-file-list.vue'))['default']
       }
-    }"
+    }
+    "
   `)
 
   await rm(dts)
 
   // Uninstall node_modules
   await rm(join(cwd, 'node_modules'), { recursive: true })
+})
+
+test('node_modules with exports field', async () => {
+  const cwd = join(__dirname, 'fixtures/exports-test')
+  await mkdir(join(cwd, 'src'), { recursive: true })
+
+  await writeFile(
+    join(cwd, 'src/pages.json'),
+    JSON.stringify({
+      easycom: {
+        custom: {
+          '^un-(.*)': 'uniapp-styleless-components/components/$1/$1.vue',
+        },
+      },
+    }),
+  )
+
+  const pkgDir = join(cwd, 'node_modules', 'uniapp-styleless-components')
+  await mkdir(join(pkgDir, 'dist', 'components', 'button'), {
+    recursive: true,
+  })
+
+  await writeFile(
+    join(pkgDir, 'package.json'),
+    JSON.stringify({
+      exports: {
+        './components/*': {
+          types: './dist/components/*.d.ts',
+          import: './dist/components/*',
+        },
+      },
+    }),
+  )
+
+  await writeFile(
+    join(pkgDir, 'dist', 'components', 'button', 'button.vue'),
+    '<template><div/></template>',
+  )
+
+  const ctx = createContext({})
+  ctx.init(cwd)
+  ctx.scanEasyComponents()
+  ctx.generateTypeDeclarations()
+
+  const dts = join(cwd, 'src/uniapp-easycom.d.ts')
+  const dtsContent = await readFile(dts, 'utf-8')
+
+  expect(dtsContent).toContain(
+    "UnButton: (typeof import('../node_modules/uniapp-styleless-components/dist/components/button/button.vue'))['default']",
+  )
+
+  await rm(cwd, { recursive: true })
 })
