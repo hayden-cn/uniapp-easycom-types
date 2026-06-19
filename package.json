@@ -32,12 +32,16 @@
   "scripts": {
     "dev": "vitest dev",
     "build": "tsup src/*.ts --format cjs,esm --dts --splitting --clean",
-    "test": "vitest --coverage"
+    "test": "vitest --coverage",
+    "lint": "biome lint .",
+    "format": "biome format . --write",
+    "check": "biome check ."
   },
   "dependencies": {
     "fast-glob": "^3.3.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
     "@types/node": "^22.14.0",
     "@vitest/coverage-v8": "^3.1.2",
     "tsup": "^8.4.0",

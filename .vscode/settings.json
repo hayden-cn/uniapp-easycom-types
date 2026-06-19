@@ -1,4 +1,5 @@
 {
+  "editor.defaultFormatter": "biomejs.biome",
   "files.associations": {
     "pages.json": "jsonc"
   },
